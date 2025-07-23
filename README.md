@@ -43,4 +43,4 @@ GET /subscriptions/18
 ```
 GET /subscriptions/sum?user_id=c53e7547-afd5-4ec5-ac97-c2e0fe229d82&service_name=Netflix&start=07-2025&end=12-2025
 ```
-
+##**Подробная документация изложена в файле swagger.yaml**##
