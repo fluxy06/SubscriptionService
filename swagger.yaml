@@ -1,0 +1,196 @@
+openapi: 3.0.3
+info:
+  title: Subscription Service API
+  version: 1.0.0
+  description: REST API для управления онлайн-подписками пользователей
+
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер
+
+paths:
+  /subscriptions:
+    get:
+      summary: Получить список всех подписок
+      tags: [Subscriptions]
+      responses:
+        '200':
+          description: Список подписок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscription'
+    post:
+      summary: Создать новую подписку
+      tags: [Subscriptions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionCreateRequest'
+      responses:
+        '201':
+          description: Подписка успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Ошибка валидации данных
+
+  /subscriptions/{id}:
+    get:
+      summary: Получить подписку по ID
+      tags: [Subscriptions]
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionID'
+      responses:
+        '200':
+          description: Найденная подписка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '404':
+          description: Подписка не найдена
+    put:
+      summary: Обновить подписку
+      tags: [Subscriptions]
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionCreateRequest'
+      responses:
+        '200':
+          description: Подписка обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+    delete:
+      summary: Удалить подписку
+      tags: [Subscriptions]
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionID'
+      responses:
+        '204':
+          description: Подписка удалена
+
+  /subscriptions/sum:
+    get:
+      summary: Получить суммарную стоимость подписок
+      tags: [Subscriptions]
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: ID пользователя (UUID)
+        - name: service_name
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Название сервиса подписки
+        - name: start
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "07-2025"
+          description: Начало периода (MM-YYYY)
+        - name: end
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "08-2025"
+          description: Конец периода (MM-YYYY)
+      responses:
+        '200':
+          description: Суммарная стоимость подписок
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 1200
+
+components:
+  parameters:
+    SubscriptionID:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: ID подписки
+
+  schemas:
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        service_name:
+          type: string
+          example: Yandex Plus
+        price:
+          type: integer
+          example: 400
+        user_id:
+          type: string
+          format: uuid
+          example: 60601fee-2bf1-4721-ae6f-7636e79a0cba
+        start_date:
+          type: string
+          example: 07-2025
+        end_date:
+          type: string
+          nullable: true
+          example: 08-2025
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-07-01T10:00:00Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-07-10T10:00:00Z
+
+    SubscriptionCreateRequest:
+      type: object
+      properties:
+        service_name:
+          type: string
+          example: Yandex Plus
+        price:
+          type: integer
+          example: 400
+        user_id:
+          type: string
+          format: uuid
+          example: 60601fee-2bf1-4721-ae6f-7636e79a0cba
+        start_date:
+          type: string
+          example: 07-2025
+        end_date:
+          type: string
+          nullable: true
+          example: 08-2025
+      required:
+        - service_name
+        - price
+        - user_id
+        - start_date
